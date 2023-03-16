@@ -7,6 +7,8 @@ import "hardhat-gas-reporter"
 import "hardhat-contract-sizer"
 import "hardhat-diamond-abi"
 import "@nomiclabs/hardhat-ganache"
+import "./tasks/event_trigger"
+import "./tasks/event_listen"
 
 const config: HardhatUserConfig = {
   solidity: "0.8.18",
