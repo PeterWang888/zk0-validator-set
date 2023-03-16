@@ -8,6 +8,8 @@ contract ValidatorSet {
 
 	address[] validators;
 	mapping(address => AddressStatus) status;
+	mapping(address => uint256) stakerAmounts;
+	mapping(address => address) staker2Validator;
 
 
     event InitiateChange(bytes32 indexed _parentHash, address[] _newSet);
@@ -41,6 +43,44 @@ contract ValidatorSet {
 		triggerChange();
 	}
 
+	function addValidator2(address _validator, uint256 amount)
+		isNotValidator(_validator)
+		checkInputAmount(payable(msg.sender), amount)
+		payable public
+	{
+		payable(address(this)).transfer(amount);
+		stakerAmounts[msg.sender] = amount;
+		staker2Validator[msg.sender] = _validator;
+
+		status[_validator].isIn = true;
+		status[_validator].index = validators.length;
+		validators.push(_validator);
+		triggerChange();
+	}
+
+	function removeValidator2(address _validator)
+		isValidator(_validator)
+		checkOutputAmount(payable(msg.sender), _validator)
+		payable public
+	{
+		address payable to = payable(msg.sender);
+		uint256 amount = stakerAmounts[to];
+		to.transfer(amount);
+
+		delete stakerAmounts[to];
+		delete staker2Validator[to];
+
+
+		uint index = status[_validator].index;
+		validators[index] = validators[validators.length - 1];
+		status[validators[index]].index = index;
+		validators.pop();
+
+		delete status[_validator];
+
+		triggerChange();
+	}
+
     function addValidator(address _validator)
 		isNotValidator(_validator)
 		public
@@ -64,9 +104,31 @@ contract ValidatorSet {
 		_;
 	}
 
+	modifier checkInputAmount(address payable from, uint256 amount)
+	{
+		// big than 1 eth and must be integer.
+		require(amount > 1000000000000000000 && amount % 1000000000000000000 == 0);
+		require(from.balance > amount);
+		_;
+	}
+
+	modifier checkOutputAmount(address payable to, address _validator)
+	{
+		// big than 1 eth and must be integer.
+		uint256 amount = stakerAmounts[to];
+		require(amount > 1000000000000000000 && amount % 1000000000000000000 == 0);
+		address validator = staker2Validator[to];
+		require(validator == _validator);
+		_;
+	}
+
     function triggerChange()
 		public
 	{
 		emit InitiateChange(blockhash(block.number - 1), validators);
 	}
+
+	fallback() external payable {}
+
+	receive() external payable {}
 }
