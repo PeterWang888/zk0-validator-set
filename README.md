@@ -1,13 +1,11 @@
-# Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
-
-Try running some of the following tasks:
+# Zk0 Validator Set Project
 
 ```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
+REPORT_GAS=true
+yarn test
+yarn node
+yarn deploy:dev
+yarn evls:dev --addr 0xfB45f8B9705FFA9d05D42b72E73afE7E2ceEa860
+yarn evet:dev --addr 0xfB45f8B9705FFA9d05D42b72E73afE7E2ceEa860 --os add
+yarn evet:dev --addr 0xfB45f8B9705FFA9d05D42b72E73afE7E2ceEa860 --os del
 ```

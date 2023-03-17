@@ -7,7 +7,7 @@ import sleep from "sleep-promise"
 import { task, types } from 'hardhat/config';
 import type { HardhatRuntimeEnvironment, Libraries } from 'hardhat/types';
 
-task('evEmit', 'event trigger')
+task('evet', 'event trigger')
   .addOptionalParam('os', 'validator set method', "add", types.string)
   .addOptionalParam('addr', 'contract address', undefined, types.string)
   .setAction(event_trigger)

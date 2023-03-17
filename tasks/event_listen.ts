@@ -6,7 +6,7 @@ import { OnEvent } from '../typechain-types/common';
 import { task, types } from 'hardhat/config';
 import type { HardhatRuntimeEnvironment, Libraries } from 'hardhat/types';
 
-task('evLs', 'event listen')
+task('evls', 'event listen')
   .addOptionalParam('addr', 'contract address', undefined, types.string)
   .setAction(event_listen)
 

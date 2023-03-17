@@ -9,11 +9,15 @@ var initValidator = [
 ];
 
 async function main() {
-  const ValidatorSet = await ethers.getContractFactory("ValidatorSet");
-  const validatorSet = await ValidatorSet.deploy(initValidator);
-  await validatorSet.deployed();
+  try {
+    const ValidatorSet = await ethers.getContractFactory("ValidatorSet");
+    const validatorSet = await ValidatorSet.deploy(initValidator);
+    await validatorSet.deployed();
   
-  console.log("ValidatorSet with deployed to ", validatorSet.address);
+    console.log("ValidatorSet with deployed to ", validatorSet.address);
+  } catch (err) {
+    console.log("error: ", err)
+  }
 }
 
 // We recommend this pattern to be able to use async/await everywhere

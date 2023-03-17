@@ -14,7 +14,7 @@ contract ValidatorSet {
 
     event InitiateChange(bytes32 indexed _parentHash, address[] _newSet);
 
-	constructor(address[] memory _initial) {
+	constructor(address[] memory _initial) payable {
 		for (uint i = 0; i < _initial.length; i++) {
 			status[_initial[i]].isIn = true;
 			status[_initial[i]].index = i;
@@ -43,13 +43,13 @@ contract ValidatorSet {
 		triggerChange();
 	}
 
-	function addValidator2(address _validator, uint256 amount)
+	function addValidator2(address _validator)
 		isNotValidator(_validator)
-		checkInputAmount(payable(msg.sender), amount)
+		checkInputAmount(payable(msg.sender), msg.value)
 		payable public
 	{
-		payable(address(this)).transfer(amount);
-		stakerAmounts[msg.sender] = amount;
+		payable(address(this)).transfer(msg.value);
+		stakerAmounts[msg.sender] = msg.value;
 		staker2Validator[msg.sender] = _validator;
 
 		status[_validator].isIn = true;
@@ -106,8 +106,8 @@ contract ValidatorSet {
 
 	modifier checkInputAmount(address payable from, uint256 amount)
 	{
-		// big than 1 eth and must be integer.
-		require(amount > 1000000000000000000 && amount % 1000000000000000000 == 0);
+		// big than ya eth and must be integer.
+		require(amount > 1 ether && amount % 1 ether == 0);
 		require(from.balance > amount);
 		_;
 	}
@@ -116,7 +116,7 @@ contract ValidatorSet {
 	{
 		// big than 1 eth and must be integer.
 		uint256 amount = stakerAmounts[to];
-		require(amount > 1000000000000000000 && amount % 1000000000000000000 == 0);
+		require(amount > 1 ether && amount % 1 ether == 0);
 		address validator = staker2Validator[to];
 		require(validator == _validator);
 		_;
@@ -128,7 +128,13 @@ contract ValidatorSet {
 		emit InitiateChange(blockhash(block.number - 1), validators);
 	}
 
-	fallback() external payable {}
+    function getBalance()
+		public view
+		returns(uint256)
+	{
+		return address(this).balance;
+	}
 
 	receive() external payable {}
+    fallback() external payable{}
 }

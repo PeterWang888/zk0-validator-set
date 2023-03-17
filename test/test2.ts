@@ -13,7 +13,7 @@ var initValidator = [
   "0x48205115d36c89502D17C9772829053a9C223912",
 ];
 
-describe("Set Validator", function () {
+describe("Set Validator2", function () {
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
   // and reset Hardhat Network to that snapshot in every test.
@@ -26,8 +26,8 @@ describe("Set Validator", function () {
     return {validatorSet }
   }
 
-  describe("Listen Events", function () {
-    it("Should add the Validator right", function (done) {
+  describe("Listen Events2", function () {
+    it("Should add the Validator right2", function (done) {
       console.log("1 block height", ethers.provider.blockNumber)
 
       var test = async function () {
@@ -47,15 +47,16 @@ describe("Set Validator", function () {
             try {
               expect(res).to.equal(true)
               var validators = await validatorSet.getValidators()
-              expect(validators).to.eql(initValidator.concat(["0xA405BA2b64DC04466E0f23487FD1c4A084787326"]))
-              await validatorSet.removeValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
+              expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
+              await validatorSet.removeValidator("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
               done()
             } catch (err) {
               console.log("err: ", err)
             }
           }, 7000)
 
-          await validatorSet.addValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
+          var valWei = ethers.utils.parseEther('2')
+          await validatorSet.addValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D", { value: valWei })
         } catch (err) {
           console.log("err: ", err)
         }
@@ -66,7 +67,7 @@ describe("Set Validator", function () {
       console.log("1 block height", ethers.provider.blockNumber)
     }).timeout(8000)
 
-    it("Should del the Validator right", function (done) {
+    it("Should del the Validator right2", function (done) {
       console.log("2 block height", ethers.provider.blockNumber)
 
       var test = async function () {
@@ -77,7 +78,8 @@ describe("Set Validator", function () {
           var validators = await validatorSet.getValidators()
           console.log(validators)
 
-          await validatorSet.addValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
+          var valWei = ethers.utils.parseEther('2')
+          await validatorSet.addValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D", { value: valWei })
 
           let res = false
           validatorSet.once("InitiateChange", (_parentHash, _newSet) => {
@@ -95,7 +97,7 @@ describe("Set Validator", function () {
             }
           }, 7000)
 
-          await validatorSet.removeValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
+          await validatorSet.removeValidator("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
         } catch (err) {
           console.log("err: ", err)
         }
@@ -105,7 +107,7 @@ describe("Set Validator", function () {
       console.log("2 block height", ethers.provider.blockNumber)
     }).timeout(8000)
 
-    it("Should get the Validators right", function (done) {
+    it("Should get the Validators right2", function (done) {
      
       console.log("3 block height", ethers.provider.blockNumber)
 
@@ -117,11 +119,12 @@ describe("Set Validator", function () {
           console.log(validators)
           expect(validators).to.eql(initValidator)
 
-          await validatorSet.addValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
+          var valWei = ethers.utils.parseEther('2')
+          await validatorSet.addValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D", { value: valWei })
           validators = await validatorSet.getValidators()
-          expect(validators).to.eql(initValidator.concat(["0xA405BA2b64DC04466E0f23487FD1c4A084787326"]))
+          expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
 
-          await validatorSet.removeValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
+          await validatorSet.removeValidator("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
           validators = await validatorSet.getValidators()
           expect(validators).to.eql(initValidator)
           done()

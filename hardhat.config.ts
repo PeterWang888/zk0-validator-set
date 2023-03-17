@@ -19,30 +19,30 @@ const config: HardhatUserConfig = {
       accounts: [
         {
           privateKey: "0xb501fc5879f214ee8be2832e43955ac0f19e20d1f7e33436d6746ac889dc043d",
-          balance: "100000000000000000000",
+          balance: "100000000000000000000000000",
         },
       ],
       chainId: 2152,
       mining: {
         auto: true,
-        interval: 5000,
+        interval: 3000,
       },
     },
     localhost: {
       url: "http://127.0.0.1:8545",
       accounts: ["0xb501fc5879f214ee8be2832e43955ac0f19e20d1f7e33436d6746ac889dc043d"],
       chainId: 2152,
-      timeout: 5000,
+      timeout: 3000,
     },
     testnet1: {
       url: "http://35.84.212.216:12545",
       accounts: ["0x854075f30c85e2358e8376774df470a451f50227c1eedb0ea119498d7f072958"],
       chainId: 102152,
-      timeout: 5000,
+      timeout: 3000,
     }
   },
   mocha: { 
-    timeout: 8000
+    timeout: 5000
   },
   paths: {
     sources: "./contracts",

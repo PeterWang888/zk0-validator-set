@@ -4,7 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "run scripts/deploy.ts",
+    "hardhat:dev": "yarn hardhat --network localhost",
+    "hardhat:test": "yarn hardhat --network testnet1",
+    "start": "yarn hardhat node",
+    "test": "yarn hardhat test",
+    "deploy:dev": "yarn hardhat:dev run scripts/deploy.ts",
+    "deploy:test": "yarn hardhat:test run scripts/deploy.ts",
+    "evls:dev": "yarn hardhat --network localhost evls",
+    "evls:test": "yarn hardhat --network testnet1 evls",
+    "evet:dev": "yarn hardhat --network localhost evet",
+    "evet:test": "yarn hardhat --network testnet1 evet"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +36,7 @@
     "web3": "^1.8.2"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.8.2",
     "mocha-steps": "^1.3.0",
     "sleep-promise": "^9.1.0"
   }
