@@ -4,6 +4,9 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { string } from "hardhat/internal/core/params/argumentTypes";
 import { step } from "mocha-steps";
+import { BigNumber} from 'ethers';
+
+
 
 var initValidator = [
   "0xbD9E1Eb20FF75653eF480179a4D231253BAd9938",
@@ -43,19 +46,31 @@ describe("Set Validator2", function () {
             console.log("event InitiateChange: ", _parentHash, " ", _newSet)
             res = true
           })
+          var valWei = ethers.utils.parseEther('2')
+
           setTimeout(async () => {
             try {
+              
               expect(res).to.equal(true)
-              var validators = await validatorSet.getValidators()
+              var validators: string[] = await validatorSet.getValidators()
               expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
-              await validatorSet.removeValidator("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
+             
+              var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
+              expect(amounts.slice(5, amounts.length)).to.eql([valWei])
+              expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
+
+              var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
+              expect(amounts.slice(5, amounts.length)).to.eql([valWei])
+              expect(staker.slice(5, staker.length)).to.eql(["0xA405BA2b64DC04466E0f23487FD1c4A084787326"])
+                
+              await validatorSet.removeValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
               done()
             } catch (err) {
               console.log("err: ", err)
             }
           }, 7000)
 
-          var valWei = ethers.utils.parseEther('2')
+       
           await validatorSet.addValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D", { value: valWei })
         } catch (err) {
           console.log("err: ", err)
@@ -89,15 +104,24 @@ describe("Set Validator2", function () {
           setTimeout(async () => {
             try{
               expect(res).to.equal(true)
-              var validators = await validatorSet.getValidators()
+              var validators: string[] = await validatorSet.getValidators()
               expect(validators).to.eql(initValidator)
+              
+              var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
+              expect(amounts.slice(5, amounts.length)).to.eql([])
+              expect(validators).to.eql(initValidator)
+
+              var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
+              expect(amounts.slice(5, amounts.length)).to.eql([])
+              expect(staker.slice(5, staker.length)).to.eql([])
+        
               done()
             } catch (err) {
               console.log("err: ", err)
             }
           }, 7000)
 
-          await validatorSet.removeValidator("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
+          await validatorSet.removeValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
         } catch (err) {
           console.log("err: ", err)
         }
@@ -112,21 +136,52 @@ describe("Set Validator2", function () {
       console.log("3 block height", ethers.provider.blockNumber)
 
       var test = async function () {
-        try{
+        try {
           const { validatorSet } = await loadFixture(deployValidatorSetFixture)
 
-          var validators = await validatorSet.getValidators()
+          var validators: string[] = await validatorSet.getValidators()
           console.log(validators)
           expect(validators).to.eql(initValidator)
+
+          var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
+          expect(validators).to.eql(initValidator)
+    
+          var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
+          expect(amounts.slice(5, amounts.length)).to.eql([])
+          expect(validators).to.eql(initValidator)
+
+          var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
+          expect(amounts.slice(5, amounts.length)).to.eql([])
+          expect(staker.slice(5, staker.length)).to.eql([])
+
 
           var valWei = ethers.utils.parseEther('2')
           await validatorSet.addValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D", { value: valWei })
           validators = await validatorSet.getValidators()
           expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
+         
+          var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
+          expect(amounts.slice(5, amounts.length)).to.eql([valWei])
+          expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
 
-          await validatorSet.removeValidator("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
+          var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
+          expect(amounts.slice(5, amounts.length)).to.eql([valWei])
+          expect(staker.slice(5, staker.length)).to.eql(["0xA405BA2b64DC04466E0f23487FD1c4A084787326"])
+
+
+          await validatorSet.removeValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
           validators = await validatorSet.getValidators()
           expect(validators).to.eql(initValidator)
+
+          var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
+          expect(amounts.slice(5, amounts.length)).to.eql([])
+          expect(validators).to.eql(initValidator)
+
+          var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
+          expect(amounts.slice(5, amounts.length)).to.eql([])
+          expect(staker.slice(5, staker.length)).to.eql([])
+
+          
           done()
         } catch (err) {
           console.log("err: ", err)

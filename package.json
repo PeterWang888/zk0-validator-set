@@ -7,12 +7,15 @@
     "deploy": "run scripts/deploy.ts",
     "hardhat:dev": "yarn hardhat --network localhost",
     "hardhat:test": "yarn hardhat --network testnet1",
+    "compile": "yarn hardhat compile",
     "start": "yarn hardhat node",
     "test": "yarn hardhat test",
     "deploy:dev": "yarn hardhat:dev run scripts/deploy.ts",
     "deploy:test": "yarn hardhat:test run scripts/deploy.ts",
     "evls:dev": "yarn hardhat --network localhost evls",
     "evls:test": "yarn hardhat --network testnet1 evls",
+    "evtr:dev": "yarn hardhat --network localhost evtr",
+    "evtr:test": "yarn hardhat --network testnet1 evtr",
     "evet:dev": "yarn hardhat --network localhost evet",
     "evet:test": "yarn hardhat --network testnet1 evet"
   },
@@ -37,7 +40,14 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.2",
+    "@openzeppelin/test-environment": "^0.1.9",
+    "@openzeppelin/test-helpers": "^0.5.16",
+    "ganache": "^7.7.7",
+    "helpers": "^0.0.6",
     "mocha-steps": "^1.3.0",
-    "sleep-promise": "^9.1.0"
+    "save": "^2.9.0",
+    "sleep-promise": "^9.1.0",
+    "solidity": "^0.0.1",
+    "zeppelin-solidity": "^1.12.0"
   }
 }

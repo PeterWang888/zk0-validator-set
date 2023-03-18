@@ -7,11 +7,9 @@ import sleep from "sleep-promise"
 import { task, types } from 'hardhat/config';
 import type { HardhatRuntimeEnvironment, Libraries } from 'hardhat/types';
 
-task('evtr', 'event trigger')
-  .addOptionalParam('os', 'validator set method', "add", types.string)
+task('evet', 'event emit')
   .addOptionalParam('contr', 'contract address', undefined, types.string)
-  .addOptionalParam('val', 'validator address', undefined, types.string)
-  .setAction(event_trigger)
+  .setAction(event_emit)
 
 
 const abipath = "./abi/contracts/ValidatorSet.sol/ValidatorSet.json"
@@ -23,8 +21,8 @@ if (fs.existsSync(abipath)) {
 }
 var web3: Web3
 
-async function event_trigger(
-  args: { os: string; contr: string, val: string},
+async function event_emit(
+  args: { contr: string },
   hre: HardhatRuntimeEnvironment
 ) {   
   url = hre.userConfig.networks![hre.network.name].url!
@@ -37,14 +35,8 @@ async function event_trigger(
   var account = web3.eth.accounts.privateKeyToAccount(prikey);
   var address = account.address
   var data
-  var valWei = web3.utils.toWei("2", "ether")
-  if (args.os == "add") {
-    data = myContr.methods.addValidator2(args.val).encodeABI()
-  } else if (args.os == "del") {
-    data = myContr.methods.removeValidator2(args.val).encodeABI()
-  } else {
-    throw "validator method specify error"
-  }
+
+  data = myContr.methods.triggerChange().encodeABI()
 
   try {
     var nonce = await web3.eth.getTransactionCount(address)
@@ -55,7 +47,6 @@ async function event_trigger(
       data: data,
       to: args.contr,
       nonce: nonce,
-      value: valWei,
       gasLimit: web3.utils.toNumber(web3.utils.toHex(gasPrice)),
     }
     var signedTx = await web3.eth.accounts.signTransaction(tx, prikey)

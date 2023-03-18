@@ -7,6 +7,7 @@ contract ValidatorSet {
 	}
 
 	address[] validators;
+	address[] stakers;
 	mapping(address => AddressStatus) status;
 	mapping(address => uint256) stakerAmounts;
 	mapping(address => address) staker2Validator;
@@ -20,18 +21,52 @@ contract ValidatorSet {
 			status[_initial[i]].index = i;
 		}
 		validators = _initial;
+		stakers = _initial;
+	}
+
+	function getValidatorAmounts() view public
+		returns(address[] memory, uint256[] memory)
+	{
+		uint256[] memory amounts = new uint256[](stakers.length);
+		for (uint i = 0; i < stakers.length; i++) {
+			address staker = stakers[i];
+			uint256 amount = stakerAmounts[staker];
+			amounts[i] = amount;
+		}
+		return (validators, amounts);
+	}
+
+	function getStakerAmounts() view public
+		returns(address[] memory, uint256[] memory)
+	{
+		uint256[] memory amounts = new uint256[](stakers.length);
+		for (uint i = 0; i < stakers.length; i++) {
+			address staker = stakers[i];
+			uint256 amount = stakerAmounts[staker];
+			amounts[i] = amount;
+		}
+		return (stakers, amounts);
 	}
 
     function getValidators() view public
 		returns (address[] memory)
 	{
-
 		return validators;
+	}
+
+    function addValidator(address _validator)
+		isNotValidator(_validator)
+		payable public
+	{
+		status[_validator].isIn = true;
+		status[_validator].index = validators.length;
+		validators.push(_validator);
+		triggerChange();
 	}
 
     function removeValidator(address _validator)
 		isValidator(_validator)
-		public
+		payable public
 	{
 		uint index = status[_validator].index;
 		validators[index] = validators[validators.length - 1];
@@ -45,12 +80,14 @@ contract ValidatorSet {
 
 	function addValidator2(address _validator)
 		isNotValidator(_validator)
-		checkInputAmount(payable(msg.sender), msg.value)
+		checkInputAmount(msg.sender, msg.value)
 		payable public
 	{
+		address staker = msg.sender;
 		payable(address(this)).transfer(msg.value);
-		stakerAmounts[msg.sender] = msg.value;
-		staker2Validator[msg.sender] = _validator;
+		stakerAmounts[staker] = msg.value;
+		staker2Validator[staker] = _validator;
+		stakers.push(staker);
 
 		status[_validator].isIn = true;
 		status[_validator].index = validators.length;
@@ -60,34 +97,29 @@ contract ValidatorSet {
 
 	function removeValidator2(address _validator)
 		isValidator(_validator)
-		checkOutputAmount(payable(msg.sender), _validator)
+		checkOutputAmount(msg.sender, _validator)
 		payable public
 	{
 		address payable to = payable(msg.sender);
 		uint256 amount = stakerAmounts[to];
 		to.transfer(amount);
 
+		uint index = status[_validator].index;
+
+
+		stakers[index] = stakers[stakers.length - 1];
+		stakers.pop();
+
 		delete stakerAmounts[to];
 		delete staker2Validator[to];
 
 
-		uint index = status[_validator].index;
 		validators[index] = validators[validators.length - 1];
 		status[validators[index]].index = index;
 		validators.pop();
 
 		delete status[_validator];
 
-		triggerChange();
-	}
-
-    function addValidator(address _validator)
-		isNotValidator(_validator)
-		public
-	{
-		status[_validator].isIn = true;
-		status[_validator].index = validators.length;
-		validators.push(_validator);
 		triggerChange();
 	}
 
@@ -104,7 +136,7 @@ contract ValidatorSet {
 		_;
 	}
 
-	modifier checkInputAmount(address payable from, uint256 amount)
+	modifier checkInputAmount(address from, uint256 amount)
 	{
 		// big than ya eth and must be integer.
 		require(amount > 1 ether && amount % 1 ether == 0);
@@ -112,7 +144,7 @@ contract ValidatorSet {
 		_;
 	}
 
-	modifier checkOutputAmount(address payable to, address _validator)
+	modifier checkOutputAmount(address to, address _validator)
 	{
 		// big than 1 eth and must be integer.
 		uint256 amount = stakerAmounts[to];
@@ -123,7 +155,7 @@ contract ValidatorSet {
 	}
 
     function triggerChange()
-		public
+		payable public
 	{
 		emit InitiateChange(blockhash(block.number - 1), validators);
 	}
@@ -135,6 +167,6 @@ contract ValidatorSet {
 		return address(this).balance;
 	}
 
-	receive() external payable {}
-    fallback() external payable{}
+	fallback() external payable { }
+	receive() external payable { }
 }

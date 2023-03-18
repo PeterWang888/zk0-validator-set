@@ -7,29 +7,26 @@ import { task, types } from 'hardhat/config';
 import type { HardhatRuntimeEnvironment, Libraries } from 'hardhat/types';
 
 task('evls', 'event listen')
-  .addOptionalParam('addr', 'contract address', undefined, types.string)
+  .addOptionalParam('contr', 'contract address', undefined, types.string)
   .setAction(event_listen)
 
-
+const abipath = "./abi/contracts/ValidatorSet.sol/ValidatorSet.json"
 var url: string
-const abi = JSON.parse(fs.readFileSync("./abi/contracts/ValidatorSet.sol/ValidatorSet.json").toString())
+var abi: string
+if (fs.existsSync(abipath)) {
+  abi = JSON.parse(fs.readFileSync(abipath).toString())
+}
 
 async function event_listen(
-  args: { addr: string},
+  args: { contr: string},
   hre: HardhatRuntimeEnvironment
 ) {
-  if (hre.network.name === 'localhost') {
-    url = hre.userConfig.networks!.localhost!.url
-  } else if (hre.network.name === 'testnet1') {
-    url = hre.userConfig.networks!.testnet1!.url
-  } else { 
-    throw "network specify error"
-  }
+  url = hre.userConfig.networks![hre.network.name].ws!
+  console.log("WS URL: ", url)
 
   var web3 = new Web3(new Web3.providers.WebsocketProvider(url));
-  var myContr = new web3.eth.Contract(abi, args.addr);
+  var myContr = new web3.eth.Contract(abi, args.contr);
 
-  myContr.getPastEvents
   try {
     while (true) {
       var res = await new Promise((resolve, reject) => {
