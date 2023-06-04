@@ -1,14 +1,10 @@
-import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { string } from "hardhat/internal/core/params/argumentTypes";
-import { step } from "mocha-steps";
-import { BigNumber} from 'ethers';
 
+import { BigNumber } from "ethers";
 
-
-var initValidator = [
+const initValidator = [
   "0xbD9E1Eb20FF75653eF480179a4D231253BAd9938",
   "0xb549a50a5Dbf7F8957646B770413F2750790E119",
   "0x255Af8ac8E9743B85De49604d2dEC4674CD72f93",
@@ -23,173 +19,204 @@ describe("Set Validator2", function () {
   async function deployValidatorSetFixture() {
     const ValidatorSet = await ethers.getContractFactory("ValidatorSet");
     const validatorSet = await ValidatorSet.deploy(initValidator);
-    
+
     console.log("ValidatorSet with deployed to ", validatorSet.address);
 
-    return {validatorSet }
+    return { validatorSet };
   }
 
   describe("Listen Events2", function () {
     it("Should add the Validator right2", function (done) {
-      console.log("1 block height", ethers.provider.blockNumber)
+      console.log("1 block height", ethers.provider.blockNumber);
 
-      var test = async function () {
+      const test = async function () {
         try {
-          const { validatorSet } = await loadFixture(deployValidatorSetFixture)
-  
-          console.log(validatorSet.address)
-          var validators = await validatorSet.getValidators()
-          console.log(validators)
+          const { validatorSet } = await loadFixture(deployValidatorSetFixture);
 
-          let res = false
+          console.log(validatorSet.address);
+          const validators = await validatorSet.getValidators();
+          console.log(validators);
+
+          let res = false;
           validatorSet.once("InitiateChange", (_parentHash, _newSet) => {
-            console.log("event InitiateChange: ", _parentHash, " ", _newSet)
-            res = true
-          })
-          var valWei = ethers.utils.parseEther('2')
+            console.log("event InitiateChange: ", _parentHash, " ", _newSet);
+            res = true;
+          });
+          const valWei = ethers.utils.parseEther("2");
 
           setTimeout(async () => {
             try {
-              
-              expect(res).to.equal(true)
-              var validators: string[] = await validatorSet.getValidators()
-              expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
-             
-              var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
-              expect(amounts.slice(5, amounts.length)).to.eql([valWei])
-              expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
+              expect(res).to.equal(true);
+              let validators = await validatorSet.getValidators();
+              expect(validators).to.eql(
+                initValidator.concat([
+                  "0x088CDb5BA14cE686626D8C4d97F18805D5a2091D",
+                ])
+              );
 
-              var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
-              expect(amounts.slice(5, amounts.length)).to.eql([valWei])
-              expect(staker.slice(5, staker.length)).to.eql(["0xA405BA2b64DC04466E0f23487FD1c4A084787326"])
-                
-              await validatorSet.removeValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
-              done()
+              let amounts: BigNumber[] = [];
+              [validators, amounts] = await validatorSet.getValidatorAmounts();
+              expect(amounts.slice(5, amounts.length)).to.eql([valWei]);
+              expect(validators).to.eql(
+                initValidator.concat([
+                  "0x088CDb5BA14cE686626D8C4d97F18805D5a2091D",
+                ])
+              );
+
+              let staker: string[] = [];
+              [staker, amounts] = await validatorSet.getStakerAmounts();
+              expect(amounts.slice(5, amounts.length)).to.eql([valWei]);
+              expect(staker.slice(5, staker.length)).to.eql([
+                "0xA405BA2b64DC04466E0f23487FD1c4A084787326",
+              ]);
+
+              await validatorSet.removeValidator2(
+                "0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"
+              );
+              done();
             } catch (err) {
-              console.log("err: ", err)
+              console.log("err: ", err);
             }
-          }, 7000)
+          }, 7000);
 
-       
-          await validatorSet.addValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D", { value: valWei })
+          await validatorSet.addValidator2(
+            "0x088CDb5BA14cE686626D8C4d97F18805D5a2091D",
+            { value: valWei }
+          );
         } catch (err) {
-          console.log("err: ", err)
+          console.log("err: ", err);
         }
-      }  
+      };
 
-      test()
+      test();
 
-      console.log("1 block height", ethers.provider.blockNumber)
-    }).timeout(8000)
+      console.log("1 block height", ethers.provider.blockNumber);
+    }).timeout(8000);
 
     it("Should del the Validator right2", function (done) {
-      console.log("2 block height", ethers.provider.blockNumber)
+      console.log("2 block height", ethers.provider.blockNumber);
 
-      var test = async function () {
-        try{
-          const { validatorSet } = await loadFixture(deployValidatorSetFixture)
-    
-          console.log(validatorSet.address)
-          var validators = await validatorSet.getValidators()
-          console.log(validators)
+      const test = async function () {
+        try {
+          const { validatorSet } = await loadFixture(deployValidatorSetFixture);
 
-          var valWei = ethers.utils.parseEther('2')
-          await validatorSet.addValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D", { value: valWei })
+          console.log(validatorSet.address);
+          const validators = await validatorSet.getValidators();
+          console.log(validators);
 
-          let res = false
+          const valWei = ethers.utils.parseEther("2");
+          await validatorSet.addValidator2(
+            "0x088CDb5BA14cE686626D8C4d97F18805D5a2091D",
+            { value: valWei }
+          );
+
+          let res = false;
           validatorSet.once("InitiateChange", (_parentHash, _newSet) => {
-            console.log("event InitiateChange: ", _parentHash, " ", _newSet)
-            res = true
-          })
+            console.log("event InitiateChange: ", _parentHash, " ", _newSet);
+            res = true;
+          });
           setTimeout(async () => {
-            try{
-              expect(res).to.equal(true)
-              var validators: string[] = await validatorSet.getValidators()
-              expect(validators).to.eql(initValidator)
-              
-              var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
-              expect(amounts.slice(5, amounts.length)).to.eql([])
-              expect(validators).to.eql(initValidator)
+            try {
+              expect(res).to.equal(true);
+              let validators: string[] = await validatorSet.getValidators();
+              expect(validators).to.eql(initValidator);
 
-              var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
-              expect(amounts.slice(5, amounts.length)).to.eql([])
-              expect(staker.slice(5, staker.length)).to.eql([])
-        
-              done()
+              let amounts: BigNumber[] = [];
+              [validators, amounts] = await validatorSet.getValidatorAmounts();
+              expect(amounts.slice(5, amounts.length)).to.eql([]);
+              expect(validators).to.eql(initValidator);
+
+              let staker: string[] = [];
+              [staker, amounts] = await validatorSet.getStakerAmounts();
+              expect(amounts.slice(5, amounts.length)).to.eql([]);
+              expect(staker.slice(5, staker.length)).to.eql([]);
+
+              done();
             } catch (err) {
-              console.log("err: ", err)
+              console.log("err: ", err);
             }
-          }, 7000)
+          }, 7000);
 
-          await validatorSet.removeValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
+          await validatorSet.removeValidator2(
+            "0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"
+          );
         } catch (err) {
-          console.log("err: ", err)
+          console.log("err: ", err);
         }
-      }  
+      };
 
-      test()
-      console.log("2 block height", ethers.provider.blockNumber)
-    }).timeout(8000)
+      test();
+      console.log("2 block height", ethers.provider.blockNumber);
+    }).timeout(8000);
 
     it("Should get the Validators right2", function (done) {
-     
-      console.log("3 block height", ethers.provider.blockNumber)
+      console.log("3 block height", ethers.provider.blockNumber);
 
-      var test = async function () {
+      const test = async function () {
         try {
-          const { validatorSet } = await loadFixture(deployValidatorSetFixture)
+          const { validatorSet } = await loadFixture(deployValidatorSetFixture);
 
-          var validators: string[] = await validatorSet.getValidators()
-          console.log(validators)
-          expect(validators).to.eql(initValidator)
+          let validators: string[] = await validatorSet.getValidators();
+          console.log(validators);
+          expect(validators).to.eql(initValidator);
 
-          var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
-          expect(validators).to.eql(initValidator)
-    
-          var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
-          expect(amounts.slice(5, amounts.length)).to.eql([])
-          expect(validators).to.eql(initValidator)
+          let amounts: BigNumber[] = [];
+          [validators, amounts] = await validatorSet.getValidatorAmounts();
+          expect(validators).to.eql(initValidator);
 
-          var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
-          expect(amounts.slice(5, amounts.length)).to.eql([])
-          expect(staker.slice(5, staker.length)).to.eql([])
+          [validators, amounts] = await validatorSet.getValidatorAmounts();
+          expect(amounts.slice(5, amounts.length)).to.eql([]);
+          expect(validators).to.eql(initValidator);
 
+          let staker: string[] = [];
+          [staker, amounts] = await validatorSet.getStakerAmounts();
+          expect(amounts.slice(5, amounts.length)).to.eql([]);
+          expect(staker.slice(5, staker.length)).to.eql([]);
 
-          var valWei = ethers.utils.parseEther('2')
-          await validatorSet.addValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D", { value: valWei })
-          validators = await validatorSet.getValidators()
-          expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
-         
-          var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
-          expect(amounts.slice(5, amounts.length)).to.eql([valWei])
-          expect(validators).to.eql(initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"]))
+          const valWei = ethers.utils.parseEther("2");
+          await validatorSet.addValidator2(
+            "0x088CDb5BA14cE686626D8C4d97F18805D5a2091D",
+            { value: valWei }
+          );
+          validators = await validatorSet.getValidators();
+          expect(validators).to.eql(
+            initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"])
+          );
 
-          var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
-          expect(amounts.slice(5, amounts.length)).to.eql([valWei])
-          expect(staker.slice(5, staker.length)).to.eql(["0xA405BA2b64DC04466E0f23487FD1c4A084787326"])
+          [validators, amounts] = await validatorSet.getValidatorAmounts();
+          expect(amounts.slice(5, amounts.length)).to.eql([valWei]);
+          expect(validators).to.eql(
+            initValidator.concat(["0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"])
+          );
 
+          [staker, amounts] = await validatorSet.getStakerAmounts();
+          expect(amounts.slice(5, amounts.length)).to.eql([valWei]);
+          expect(staker.slice(5, staker.length)).to.eql([
+            "0xA405BA2b64DC04466E0f23487FD1c4A084787326",
+          ]);
 
-          await validatorSet.removeValidator2("0x088CDb5BA14cE686626D8C4d97F18805D5a2091D")
-          validators = await validatorSet.getValidators()
-          expect(validators).to.eql(initValidator)
+          await validatorSet.removeValidator2(
+            "0x088CDb5BA14cE686626D8C4d97F18805D5a2091D"
+          );
+          validators = await validatorSet.getValidators();
+          expect(validators).to.eql(initValidator);
 
-          var [validators, amounts]: [string[], BigNumber[]] = await validatorSet.getValidatorAmounts()
-          expect(amounts.slice(5, amounts.length)).to.eql([])
-          expect(validators).to.eql(initValidator)
+          [validators, amounts] = await validatorSet.getValidatorAmounts();
+          expect(amounts.slice(5, amounts.length)).to.eql([]);
+          expect(validators).to.eql(initValidator);
 
-          var [staker, amounts]: [string[], BigNumber[]] = await validatorSet.getStakerAmounts()
-          expect(amounts.slice(5, amounts.length)).to.eql([])
-          expect(staker.slice(5, staker.length)).to.eql([])
+          [staker, amounts] = await validatorSet.getStakerAmounts();
+          expect(amounts.slice(5, amounts.length)).to.eql([]);
+          expect(staker.slice(5, staker.length)).to.eql([]);
 
-          
-          done()
+          done();
         } catch (err) {
-          console.log("err: ", err)
+          console.log("err: ", err);
         }
-      }
+      };
 
-      test()
-      console.log("3 block height", ethers.provider.blockNumber)
-    }).timeout(8000)
-  })
-})
+      test();
+      console.log("3 block height", ethers.provider.blockNumber);
+    }).timeout(8000);
+  });
+});

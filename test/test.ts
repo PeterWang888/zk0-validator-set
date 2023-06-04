@@ -1,11 +1,8 @@
-import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { string } from "hardhat/internal/core/params/argumentTypes";
-import { step } from "mocha-steps";
 
-var initValidator = [
+const initValidator = [
   "0xbD9E1Eb20FF75653eF480179a4D231253BAd9938",
   "0xb549a50a5Dbf7F8957646B770413F2750790E119",
   "0x255Af8ac8E9743B85De49604d2dEC4674CD72f93",
@@ -20,118 +17,135 @@ describe("Set Validator", function () {
   async function deployValidatorSetFixture() {
     const ValidatorSet = await ethers.getContractFactory("ValidatorSet");
     const validatorSet = await ValidatorSet.deploy(initValidator);
-    
+
     console.log("ValidatorSet with deployed to ", validatorSet.address);
 
-    return {validatorSet }
+    return { validatorSet };
   }
 
   describe("Listen Events", function () {
     it("Should add the Validator right", function (done) {
-      console.log("1 block height", ethers.provider.blockNumber)
+      console.log("1 block height", ethers.provider.blockNumber);
 
-      var test = async function () {
+      const test = async function () {
         try {
-          const { validatorSet } = await loadFixture(deployValidatorSetFixture)
-  
-          console.log(validatorSet.address)
-          var validators = await validatorSet.getValidators()
-          console.log(validators)
+          const { validatorSet } = await loadFixture(deployValidatorSetFixture);
 
-          let res = false
+          console.log(validatorSet.address);
+          const validators = await validatorSet.getValidators();
+          console.log(validators);
+
+          let res = false;
           validatorSet.once("InitiateChange", (_parentHash, _newSet) => {
-            console.log("event InitiateChange: ", _parentHash, " ", _newSet)
-            res = true
-          })
+            console.log("event InitiateChange: ", _parentHash, " ", _newSet);
+            res = true;
+          });
           setTimeout(async () => {
             try {
-              expect(res).to.equal(true)
-              var validators = await validatorSet.getValidators()
-              expect(validators).to.eql(initValidator.concat(["0xA405BA2b64DC04466E0f23487FD1c4A084787326"]))
-              await validatorSet.removeValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
-              done()
+              expect(res).to.equal(true);
+              const validators = await validatorSet.getValidators();
+              expect(validators).to.eql(
+                initValidator.concat([
+                  "0xA405BA2b64DC04466E0f23487FD1c4A084787326",
+                ])
+              );
+              await validatorSet.removeValidator(
+                "0xA405BA2b64DC04466E0f23487FD1c4A084787326"
+              );
+              done();
             } catch (err) {
-              console.log("err: ", err)
+              console.log("err: ", err);
             }
-          }, 7000)
+          }, 7000);
 
-          await validatorSet.addValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
+          await validatorSet.addValidator(
+            "0xA405BA2b64DC04466E0f23487FD1c4A084787326"
+          );
         } catch (err) {
-          console.log("err: ", err)
+          console.log("err: ", err);
         }
-      }  
+      };
 
-      test()
+      test();
 
-      console.log("1 block height", ethers.provider.blockNumber)
-    }).timeout(8000)
+      console.log("1 block height", ethers.provider.blockNumber);
+    }).timeout(8000);
 
     it("Should del the Validator right", function (done) {
-      console.log("2 block height", ethers.provider.blockNumber)
+      console.log("2 block height", ethers.provider.blockNumber);
 
-      var test = async function () {
-        try{
-          const { validatorSet } = await loadFixture(deployValidatorSetFixture)
-    
-          console.log(validatorSet.address)
-          var validators = await validatorSet.getValidators()
-          console.log(validators)
+      const test = async function () {
+        try {
+          const { validatorSet } = await loadFixture(deployValidatorSetFixture);
 
-          await validatorSet.addValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
+          console.log(validatorSet.address);
+          const validators = await validatorSet.getValidators();
+          console.log(validators);
 
-          let res = false
+          await validatorSet.addValidator(
+            "0xA405BA2b64DC04466E0f23487FD1c4A084787326"
+          );
+
+          let res = false;
           validatorSet.once("InitiateChange", (_parentHash, _newSet) => {
-            console.log("event InitiateChange: ", _parentHash, " ", _newSet)
-            res = true
-          })
+            console.log("event InitiateChange: ", _parentHash, " ", _newSet);
+            res = true;
+          });
           setTimeout(async () => {
-            try{
-              expect(res).to.equal(true)
-              var validators = await validatorSet.getValidators()
-              expect(validators).to.eql(initValidator)
-              done()
+            try {
+              expect(res).to.equal(true);
+              const validators = await validatorSet.getValidators();
+              expect(validators).to.eql(initValidator);
+              done();
             } catch (err) {
-              console.log("err: ", err)
+              console.log("err: ", err);
             }
-          }, 7000)
+          }, 7000);
 
-          await validatorSet.removeValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
+          await validatorSet.removeValidator(
+            "0xA405BA2b64DC04466E0f23487FD1c4A084787326"
+          );
         } catch (err) {
-          console.log("err: ", err)
+          console.log("err: ", err);
         }
-      }  
+      };
 
-      test()
-      console.log("2 block height", ethers.provider.blockNumber)
-    }).timeout(8000)
+      test();
+      console.log("2 block height", ethers.provider.blockNumber);
+    }).timeout(8000);
 
     it("Should get the Validators right", function (done) {
-     
-      console.log("3 block height", ethers.provider.blockNumber)
+      console.log("3 block height", ethers.provider.blockNumber);
 
-      var test = async function () {
-        try{
-          const { validatorSet } = await loadFixture(deployValidatorSetFixture)
+      const test = async function () {
+        try {
+          const { validatorSet } = await loadFixture(deployValidatorSetFixture);
 
-          var validators = await validatorSet.getValidators()
-          console.log(validators)
-          expect(validators).to.eql(initValidator)
+          let validators = await validatorSet.getValidators();
+          console.log(validators);
+          expect(validators).to.eql(initValidator);
 
-          await validatorSet.addValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
-          validators = await validatorSet.getValidators()
-          expect(validators).to.eql(initValidator.concat(["0xA405BA2b64DC04466E0f23487FD1c4A084787326"]))
+          await validatorSet.addValidator(
+            "0xA405BA2b64DC04466E0f23487FD1c4A084787326"
+          );
+          validators = await validatorSet.getValidators();
+          expect(validators).to.eql(
+            initValidator.concat(["0xA405BA2b64DC04466E0f23487FD1c4A084787326"])
+          );
 
-          await validatorSet.removeValidator("0xA405BA2b64DC04466E0f23487FD1c4A084787326")
-          validators = await validatorSet.getValidators()
-          expect(validators).to.eql(initValidator)
-          done()
+          await validatorSet.removeValidator(
+            "0xA405BA2b64DC04466E0f23487FD1c4A084787326"
+          );
+          validators = await validatorSet.getValidators();
+          expect(validators).to.eql(initValidator);
+          done();
         } catch (err) {
-          console.log("err: ", err)
+          console.log("err: ", err);
         }
-      }
+      };
 
-      test()
-      console.log("3 block height", ethers.provider.blockNumber)
-    }).timeout(8000)
-  })
-})
+      test();
+      console.log("3 block height", ethers.provider.blockNumber);
+    }).timeout(8000);
+  });
+});

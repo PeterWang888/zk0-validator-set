@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 
-var initValidator: string[] = [
+const initValidator: string[] = [
   // "0xbD9E1Eb20FF75653eF480179a4D231253BAd9938",
   // "0xb549a50a5Dbf7F8957646B770413F2750790E119",
   // "0x255Af8ac8E9743B85De49604d2dEC4674CD72f93",
@@ -13,10 +13,10 @@ async function main() {
     const ValidatorSet = await ethers.getContractFactory("ValidatorSet");
     const validatorSet = await ValidatorSet.deploy(initValidator);
     await validatorSet.deployed();
-  
+
     console.log("ValidatorSet with deployed to ", validatorSet.address);
   } catch (err) {
-    console.log("error: ", err)
+    console.log("error: ", err);
   }
 }
 
