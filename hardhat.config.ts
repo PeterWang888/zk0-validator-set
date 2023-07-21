@@ -30,24 +30,24 @@ const config: HardhatUserConfig = {
           balance: "100000000000000000000000000",
         },
       ],
-      chainId: 2152,
+      chainId: 102152,
       mining: {
         auto: true,
         interval: 3000,
       },
     },
     localhost: {
-      ws: "http://127.0.0.1:8545",
+      ws: "ws://127.0.0.1:8546",
       url: "http://127.0.0.1:8545",
       accounts: [
-        "0xb501fc5879f214ee8be2832e43955ac0f19e20d1f7e33436d6746ac889dc043d",
+        "0x854075f30c85e2358e8376774df470a451f50227c1eedb0ea119498d7f072958",
       ],
-      chainId: 2152,
+      chainId: 102152,
       timeout: 3000,
     },
     testnet1: {
-      ws: "ws://35.84.212.216:12546",
-      url: "http://35.84.212.216:12545",
+      ws: "wss://testnet-rpc.zkzero.io:8546",
+      url: "https://testnet-rpc.zkzero.io:8545",
       accounts: [
         "0x854075f30c85e2358e8376774df470a451f50227c1eedb0ea119498d7f072958",
       ],

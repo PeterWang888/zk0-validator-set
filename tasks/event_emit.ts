@@ -6,7 +6,7 @@ import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import { AbiItem } from "web3-utils";
 
 task("evet", "event emit")
-  .addOptionalParam("contr", "contract address", undefined, types.string)
+  .addOptionalParam("contr", "contract address", "0x3c122a1904F27DD3A2EB9A6C0D1A03C9560527b9", types.string)
   .setAction(event_emit);
 
 const abipath = "./abi/contracts/ValidatorSet.sol/ValidatorSet.json";

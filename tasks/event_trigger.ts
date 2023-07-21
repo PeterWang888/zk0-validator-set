@@ -7,7 +7,7 @@ import { AbiItem } from "web3-utils";
 
 task("evtr", "event trigger")
   .addOptionalParam("os", "validator set method", "add", types.string)
-  .addOptionalParam("contr", "contract address", undefined, types.string)
+  .addOptionalParam("contr", "contract address", "0x3c122a1904F27DD3A2EB9A6C0D1A03C9560527b9", types.string)
   .addOptionalParam("val", "validator address", undefined, types.string)
   .setAction(event_trigger);
 
